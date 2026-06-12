@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tug'ilgan kuningiz bilan, Onajon!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #4a000e 0%, #2b0008 75%, #140003 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            perspective: 1500px;
+            padding: 20px;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            height: 560px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ультра-реалистичный 3D конверт */
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            height: 230px;
+            background: linear-gradient(135deg, #72001c 0%, #4a0010 100%);
+            box-shadow: 
+                0 30px 60px rgba(0,0,0,0.7),
+                inset 0 1px 4px rgba(255,255,255,0.3),
+                inset 0 -5px 15px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-style: preserve-3d;
+            z-index: 2;
+        }
+
+        /* Эффект покачивания при наведении/тапе */
+        .envelope-wrapper:hover {
+            transform: translateY(-10px) rotateX(10deg);
+        }
+
+        /* Реалистичный откидывающийся вверх 3D-клапан */
+        .envelope-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 180px solid transparent;
+            border-right: 180px solid transparent;
+            border-top: 135px solid #8a0022;
+            transform-origin: top;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.1s step-end 0.2s;
+            z-index: 4;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4));
+        }
+
+        /* Передние боковые стенки конверта */
+        .envelope-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-left: 180px solid #5c0014;
+            border-right: 180px solid #5c0014;
+            border-bottom: 120px solid #3d000b;
+            border-top: 110px solid transparent;
+            border-radius: 0 0 8px 8px;
+            z-index: 3;
+            filter: drop-shadow(0 -4px 10px rgba(0,0,0,0.4));
+        }
+
+        /* Текст на конверте сусальным золотом */
+        .envelope-title {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 160px;
+            background: linear-gradient(90deg, #ffe082, #d4af37, #f1d299, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 15px;
+            font-style: italic;
+            font-weight: bold;
+            letter-spacing: 1px;
+            z-index: 5;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+        }
+
+        /* Роскошная открытка внутри */
+        .card {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: calc(100% - 30px);
+            height: 200px;
+            background: linear-gradient(135deg, #ffffff 0%, #fffbfb 100%);
+            border: 3px double #d4af37;
+            border-radius: 8px;
+            padding: 25px 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 1;
+            transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1), height 0.7s ease, z-index 0.1s step-end 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transform: translateZ(-1px);
+        }
+
+        .card h1 {
+            font-size: 19px;
+            color: #5c0014;
+            margin-bottom: 12px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.4s ease 0.4s;
+        }
+
+        .card p {
+            font-size: 13.5px;
+            color: #2b2b2b;
+            line-height: 1.6;
+            opacity: 0;
+            transition: opacity 0.4s ease 0.5s;
+        }
+
+        .card b {
+            background: linear-gradient(45deg, #800020, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 15px;
+            display: inline-block;
+            margin-top: 12px;
+        }
+
+        /* Анимация при клике */
+        .envelope-wrapper.open {
+            transform: translateY(60px) rotateX(0deg);
+        }
+
+        .envelope-wrapper.open::before {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-wrapper.open .card {
+            transform: translateY(-200px) translateZ(50px);
+            height: 350px;
+            z-index: 6;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        .envelope-wrapper.open .envelope-title {
+            opacity: 0;
+        }
+
+        .envelope-wrapper.open .card h1,
+        .envelope-wrapper.open .card p {
+            opacity: 1;
+        }
+
+        /* Золотые премиальные конфетти */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 11px;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            border-radius: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="envelope-wrapper" id="envelope" onclick="openCard()">
+            <div class="envelope-title">Iroda onajonim uchun ochilsin ✨</div>
+            
+            <div class="card">
+                <h1>Tug'ilgan kuningiz muborak, Onajon! 🎉</h1>
+                <p>Mehribonim, aziz onajonim!<br>
+                   Sizni bugungi quvonchli kuningiz bilan chin qalbimdan tabriklayman!<br>
+                   Sizga dunyodagi eng mustahkam sog'lik, cheksiz baxt va xotirjamlik tilayman. Yuzingizdagi tabassum bizni doim quvontirsin. Bizning baxtimizga doimo salomat bo'ling!<br>
+                   <br>
+                   <b>Sizni juda ham yaxshi ko'raman! ❤️</b>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://audio.jofre.de/happy_birthday_piano.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function openCard() {
+            const envelope = document.getElementById('envelope');
+            const music = document.getElementById('bg-music');
+            
+            if (!envelope.classList.contains('open')) {
+                envelope.classList.add('open');
+                
+                // Стабильный запуск аудио
+                music.volume = 0.8;
+                music.play().catch(err => {
+                    console.log("Браузер потребовал жесткого клика", err);
+                    // Повторная попытка на случай микро-сбоя сети
+                    setTimeout(() => music.play(), 100);
+                });
+                
+                createConfetti();
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#d4af37', '#f1d299', '#aa7c11', '#800020', '#b8860b', '#ffffff'];
+            
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                document.body.appendChild(confetti);
+
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = '50%';
+                confetti.style.top = '50%';
+                confetti.style.opacity = '1';
+
+                const destinationX = (Math.random() - 0.5) * 800;
+                const destinationY = (Math.random() - 0.6) * 700 - 200;
+                const rotation = Math.random() * 1080;
+
+                confetti.animate([
+                    { transform: 'translate(-50%, -50%) scale(1) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${destinationX}px), calc(-50% + ${destinationY}px)) scale(0.3) rotate(${rotation}deg)`, opacity: 0 }
+                ], {
+                    duration: 1500 + Math.random() * 1500,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+                    fill: 'forwards'
+                });
+
+                setTimeout(() => { confetti.remove(); }, 3100);
+            }
+        }
+    </script>
+</body>
+</html>
